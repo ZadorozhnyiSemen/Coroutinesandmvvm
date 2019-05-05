@@ -3,7 +3,7 @@ package com.simon.pattern.base
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 
-class CoroutineViewModel : ViewModel() {
+open class CoroutineViewModel : ViewModel() {
 
     private val viewModelScope = CoroutineScope(Job())
 
