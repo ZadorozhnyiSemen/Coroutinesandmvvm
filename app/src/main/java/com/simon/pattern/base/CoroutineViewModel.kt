@@ -5,7 +5,7 @@ import kotlinx.coroutines.*
 
 class CoroutineViewModel : ViewModel() {
 
-    private val viewModelScope = MainScope()
+    private val viewModelScope = CoroutineScope(Job())
 
     fun launchLite(task: suspend () -> Unit): Job {
         return viewModelScope.launch(Dispatchers.Default) { task() }
