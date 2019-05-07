@@ -2,10 +2,11 @@ package com.simon.pattern.base
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
 open class CoroutineViewModel : ViewModel() {
 
-    private val viewModelScope = CoroutineScope(Job())
+    protected val viewModelScope = ViewModelCoroutineScope()
 
     fun launchLite(task: suspend () -> Unit): Job {
         return viewModelScope.launch(Dispatchers.Default) { task() }
@@ -35,4 +36,11 @@ open class CoroutineViewModel : ViewModel() {
         viewModelScope.cancel()
         super.onCleared()
     }
+}
+
+class ViewModelCoroutineScope(
+    job: Job = SupervisorJob(),
+    dispatcher: CoroutineDispatcher = Dispatchers.IO // Default IO assuming we almost always call network for data
+) : CoroutineScope {
+    override val coroutineContext: CoroutineContext = job + dispatcher
 }
