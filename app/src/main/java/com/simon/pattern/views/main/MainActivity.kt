@@ -1,13 +1,11 @@
 package com.simon.pattern.views.main
 
 import android.os.Bundle
+import android.util.Base64
 import com.simon.pattern.R
 import com.simon.pattern.base.BaseActivity
 import com.simon.pattern.utils.viewModelProvider
 import com.spotify.android.appremote.api.ConnectionParams
-import com.spotify.android.appremote.api.Connector
-import com.spotify.android.appremote.api.SpotifyAppRemote
-import timber.log.Timber
 
 class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainViewModel
@@ -27,18 +25,26 @@ class MainActivity : BaseActivity() {
             .setRedirectUri("http://replay-app-login/callback")
             .build()
 
-        SpotifyAppRemote.connect(this, connectionParams, object : Connector.ConnectionListener {
-            override fun onFailure(p0: Throwable?) {
-                Timber.e(p0)
-            }
+        println(String(Base64.decode(getClientId(), Base64.DEFAULT)))
 
-            override fun onConnected(p0: SpotifyAppRemote?) {
-                Timber.d("Connected")
+//        SpotifyAppRemote.connect(this, connectionParams, object : Connector.ConnectionListener {
+//            override fun onFailure(p0: Throwable?) {
+//                Timber.e(p0)
+//            }
+//
+//            override fun onConnected(p0: SpotifyAppRemote?) {
+//                Timber.d("Connected")
+//
+//            }
+//
+//        })
+    }
 
-            }
+    private external fun getClientId(): String
 
-        })
-
-
+    companion object {
+        init {
+            System.loadLibrary("key-store")
+        }
     }
 }
