@@ -10,7 +10,9 @@ class MainViewModel @Inject constructor() : CoroutineViewModel() {
     val textWithStatus = MutableLiveData<String>()
 
     fun checkIfCoroutinesWorking() {
-        launchIO { delayTextUpdate() }
+        launchIO {
+            delayTextUpdate()
+        }
     }
 
     private suspend fun delayTextUpdate() {

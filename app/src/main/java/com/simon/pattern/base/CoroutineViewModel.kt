@@ -6,7 +6,7 @@ import kotlin.coroutines.CoroutineContext
 
 open class CoroutineViewModel : ViewModel() {
 
-    protected val viewModelScope = ViewModelCoroutineScope()
+    protected val viewModelScope = ViewModelCoroutineScope() // change to 'viewModelScope' after release
 
     fun launchLite(task: suspend () -> Unit): Job {
         return viewModelScope.launch(Dispatchers.Default) { task() }
