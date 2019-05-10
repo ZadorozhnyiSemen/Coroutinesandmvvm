@@ -18,3 +18,12 @@ add_library( # Specifies the name of the library.
 
              # Provides a relative path to your source file(s).
              main/native/key-store.cpp )
+
+add_library( # Specifies the name of the library.
+        secret-lib
+
+        # Sets the library as a shared library.
+        SHARED
+
+        # Provides a relative path to your source file(s).
+        main/native/secret-lib.cpp)

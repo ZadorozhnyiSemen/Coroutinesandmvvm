@@ -2,21 +2,45 @@ package com.simon.pattern.views.main
 
 import androidx.lifecycle.MutableLiveData
 import com.simon.pattern.base.CoroutineViewModel
-import kotlinx.coroutines.delay
+import com.simon.pattern.repository.AuthData
+import com.simon.pattern.repository.SpotifyRepository
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor() : CoroutineViewModel() {
+class MainViewModel @Inject constructor(
+    private val spotifyRepository: SpotifyRepository
+) : CoroutineViewModel() {
 
     val textWithStatus = MutableLiveData<String>()
+    val userLoginRequired = MutableLiveData<AuthData>()
+    val spotifyServiceReady = MutableLiveData<Boolean>(false)
+
+    fun checkUserTokenAvailable() {
+        launchLite {
+            if (spotifyRepository.authToken.isEmpty()) {
+                userLoginRequired.postValue(spotifyRepository.authData)
+            }
+        }
+    }
+
+    fun obtainAccessToken(accessToken: String) {
+        launchLite {
+            spotifyRepository.authToken = accessToken
+            spotifyServiceReady.postValue(true)
+        }
+    }
 
     fun checkIfCoroutinesWorking() {
-        launchIO {
+        launchLite {
             delayTextUpdate()
         }
     }
 
     private suspend fun delayTextUpdate() {
-        delay(10_000)
-        textWithStatus.postValue("Background work done")
+        val song = spotifyRepository.searchSong("Yeah Yeah Yeah!")
+        if (song == null) {
+            textWithStatus.postValue("Search for son returns null")
+        } else {
+            println(song.await())
+        }
     }
 }
