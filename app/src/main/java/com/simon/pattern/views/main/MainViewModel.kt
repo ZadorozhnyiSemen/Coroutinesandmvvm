@@ -40,7 +40,7 @@ class MainViewModel @Inject constructor(
         if (song == null) {
             textWithStatus.postValue("Search for son returns null")
         } else {
-            println(song.await())
+            println(song)
         }
     }
 }

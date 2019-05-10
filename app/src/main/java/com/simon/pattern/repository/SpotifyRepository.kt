@@ -3,7 +3,6 @@ package com.simon.pattern.repository
 import android.util.Base64
 import com.google.gson.JsonObject
 import com.simon.pattern.rest.SpotifyService
-import kotlinx.coroutines.Deferred
 import javax.inject.Inject
 
 class SpotifyRepository @Inject constructor(
@@ -27,9 +26,9 @@ class SpotifyRepository @Inject constructor(
 
     private fun decodeKey(key: String) = String(Base64.decode(key, Base64.DEFAULT))
 
-    suspend fun searchSong(songName: String): Deferred<JsonObject>? {
+    suspend fun searchSong(songName: String): JsonObject? {
         return if (authorizationTokenAcquired) {
-            return spotifyApi.searchTrack("Bearer $authToken", songName)
+            return spotifyApi.searchTrack("Bearer $authToken", songName).await()
         } else {
             null
         }
