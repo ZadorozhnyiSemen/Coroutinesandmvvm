@@ -28,7 +28,7 @@ class SpotifyRepository @Inject constructor(
 
     suspend fun searchSong(songName: String): JsonObject? {
         return if (authorizationTokenAcquired) {
-            return spotifyApi.searchTrack("Bearer $authToken", songName).await()
+            return spotifyApi.searchTrack("Bearer $authToken", songName)
         } else {
             null
         }

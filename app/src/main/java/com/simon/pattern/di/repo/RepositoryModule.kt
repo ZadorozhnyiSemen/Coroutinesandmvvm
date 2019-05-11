@@ -1,6 +1,5 @@
 package com.simon.pattern.di.repo
 
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.simon.pattern.rest.SpotifyService
 import dagger.Module
 import dagger.Provides
@@ -18,7 +17,6 @@ class RepositoryModule {
             .baseUrl("https://api.spotify.com/v1/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build().create(SpotifyService::class.java)
     }
 

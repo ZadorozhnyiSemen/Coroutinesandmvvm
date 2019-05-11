@@ -6,9 +6,9 @@ buildscript {
         dagger = "2.16"
     }
     repositories {
+
         google()
         jcenter()
-        
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.0'
@@ -22,7 +22,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" } // retrofit snapshot
     }
 }
 
