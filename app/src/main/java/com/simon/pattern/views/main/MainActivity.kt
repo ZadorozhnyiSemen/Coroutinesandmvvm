@@ -11,6 +11,7 @@ import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
+import timber.log.Timber
 
 class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainViewModel
@@ -21,14 +22,16 @@ class MainActivity : BaseActivity() {
 
         viewModel = viewModelProvider(viewModelFactory)
         viewModel.userLoginRequired.observe(this, Observer {
-            requestAccessToken(it)
+            Timber.d("New auth data received ${it.peek()}")
+            it.getValueForEvent()?.let { data ->
+                requestAccessToken(data)
+            }
         })
         viewModel.spotifyServiceReady.observe(this, Observer {
-            if (it) println("------------Token aquired-----------")
+            Timber.d("New token received. Service ready")
             viewModel.checkIfCoroutinesWorking()
         })
         viewModel.checkUserTokenAvailable()
-        //viewModel.checkIfCoroutinesWorking()
     }
 
     private fun subscribeToData() {
@@ -60,7 +63,7 @@ class MainActivity : BaseActivity() {
 
     private fun requestAccessToken(authData: AuthData) {
         val request = getAuthRequest(AuthenticationResponse.Type.TOKEN, authData)
-        AuthenticationClient.openLoginActivity(this, 123, request)
+        AuthenticationClient.openLoginActivity(this, TOKEN_RESULT_CODE, request)
     }
 
     private fun getAuthRequest(
@@ -80,21 +83,17 @@ class MainActivity : BaseActivity() {
         val response = AuthenticationClient.getResponse(resultCode, data)
 
         when (requestCode) {
-            123 -> {
-                println(response.accessToken)
+            TOKEN_RESULT_CODE -> {
+                Timber.d("Access token from ICP [${response.accessToken}]")
                 viewModel.obtainAccessToken(response.accessToken)
             }
             else -> {
-                println("token not here")
+                Timber.d("Unhandled activity result with request code: [$requestCode]")
             }
         }
     }
 
-
-
     companion object {
-        init {
-            System.loadLibrary("key-store")
-        }
+        private const val TOKEN_RESULT_CODE = 124
     }
 }
