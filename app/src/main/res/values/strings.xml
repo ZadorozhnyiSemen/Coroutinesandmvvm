@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Coroutines and mvvm</string>
+    <string name="app_name">Replay</string>
     <string name="title_activity_launcher">LauncherActivity</string>
     <string name="title_activity_onboarding">OnboardingActivity</string>
 </resources>
