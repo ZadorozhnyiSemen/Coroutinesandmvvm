@@ -1,7 +1,7 @@
 package com.simon.pattern.repository
 
 import android.util.Base64
-import com.google.gson.JsonObject
+import com.simon.pattern.domain.Track
 import com.simon.pattern.rest.SpotifyService
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ class SpotifyRepository @Inject constructor(
 
     private fun decodeKey(key: String) = String(Base64.decode(key, Base64.DEFAULT))
 
-    suspend fun searchSong(songName: String): JsonObject? {
+    suspend fun searchSong(songName: String): List<Track>? {
         return if (authorizationTokenAcquired) {
             return spotifyApi.searchTrack("Bearer $authToken", songName)
         } else {

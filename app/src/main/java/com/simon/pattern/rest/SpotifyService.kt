@@ -1,6 +1,6 @@
 package com.simon.pattern.rest
 
-import com.google.gson.JsonObject
+import com.simon.pattern.domain.Track
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
@@ -11,6 +11,6 @@ interface SpotifyService {
     suspend fun searchTrack(
         @Header("Authorization") token: String,
         @Query("q") searchQuery: String
-    ): JsonObject
+    ): List<Track>
 
 }
