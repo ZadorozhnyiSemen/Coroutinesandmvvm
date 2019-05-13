@@ -1,8 +1,9 @@
 package com.simon.pattern.repository
 
 import android.util.Base64
-import com.simon.pattern.domain.Track
+import com.simon.pattern.domain.SearchResult
 import com.simon.pattern.rest.SpotifyService
+import timber.log.Timber
 import javax.inject.Inject
 
 class SpotifyRepository @Inject constructor(
@@ -26,10 +27,12 @@ class SpotifyRepository @Inject constructor(
 
     private fun decodeKey(key: String) = String(Base64.decode(key, Base64.DEFAULT))
 
-    suspend fun searchSong(songName: String): List<Track>? {
+    suspend fun searchSong(songName: String): SearchResult? {
         return if (authorizationTokenAcquired) {
+            Timber.d("================= token here =============")
             return spotifyApi.searchTrack("Bearer $authToken", songName)
         } else {
+            Timber.d("----------------- no toten --------------")
             null
         }
     }

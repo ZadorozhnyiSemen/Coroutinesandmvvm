@@ -3,22 +3,45 @@ package com.simon.pattern.views.main
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.simon.pattern.R
 import com.simon.pattern.base.BaseActivity
+import com.simon.pattern.domain.Track
 import com.simon.pattern.repository.AuthData
+import com.simon.pattern.utils.getDistinctWatcher
 import com.simon.pattern.utils.viewModelProvider
 import com.spotify.android.appremote.api.ConnectionParams
+import com.spotify.android.appremote.api.Connector
+import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.spotify.protocol.types.Repeat
 import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
+import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
 class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainViewModel
     override val layoutId: Int? = R.layout.activity_main
 
+    private val trackAdapter = TracksAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        track_search.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.VERTICAL, false)
+            adapter = trackAdapter
+        }
+
+        search_input.addTextChangedListener(getDistinctWatcher {
+            it?.let { query ->
+                if (query.length > 3) {
+                    viewModel.onSearchQueryChanged(query.toString())
+                }
+            }
+        })
 
         viewModel = viewModelProvider(viewModelFactory)
         viewModel.userLoginRequired.observe(this, Observer {
@@ -29,36 +52,40 @@ class MainActivity : BaseActivity() {
         })
         viewModel.spotifyServiceReady.observe(this, Observer {
             Timber.d("New token received. Service ready")
-            viewModel.checkIfCoroutinesWorking()
+            search_input.isEnabled = true
+            //viewModel.checkIfCoroutinesWorking()
+        })
+        viewModel.searchResult.observe(this, Observer {
+            Timber.d("New search result accuired: \n\n\n $it")
+            trackAdapter.tracks = it
+        })
+
+        viewModel.topTrack.observe(this, Observer {
+            it.getValueForEvent()?.let { track ->
+                //playTrack(track)
+            }
         })
         viewModel.checkUserTokenAvailable()
     }
 
-    private fun subscribeToData() {
-        viewModel.textWithStatus.observe(this, Observer {
-            println(it)
-        })
+    private fun playTrack(track: Track) {
+
         val connectionParams = ConnectionParams.Builder("4b4c241b697149978b2824480b6aec7c")
             .showAuthView(true)
             .setRedirectUri("http://replay-app-login/callback")
             .build()
 
-        //val clientId = String(Base64.decode(getClientId(), Base64.DEFAULT))
-        //println(clientId)
+        SpotifyAppRemote.connect(this, connectionParams, object : Connector.ConnectionListener {
+            override fun onFailure(p0: Throwable?) {
+                Timber.e(p0)
+            }
 
-        //requestAccessToken(clientId)
+            override fun onConnected(p0: SpotifyAppRemote?) {
+                p0?.playerApi?.play(track.uri)
+                p0?.playerApi?.setRepeat(Repeat.ONE)
+            }
 
-//        SpotifyAppRemote.connect(this, connectionParams, object : Connector.ConnectionListener {
-//            override fun onFailure(p0: Throwable?) {
-//                Timber.e(p0)
-//            }
-//
-//            override fun onConnected(p0: SpotifyAppRemote?) {
-//                Timber.d("Connected")
-//
-//            }
-//
-//        })
+        })
     }
 
     private fun requestAccessToken(authData: AuthData) {

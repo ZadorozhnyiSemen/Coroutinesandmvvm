@@ -16,6 +16,7 @@ class MainViewModel @Inject constructor(
     val userLoginRequired = MutableLiveData<SingleEvent<AuthData>>()
     val spotifyServiceReady = MutableLiveData<Boolean>(false)
     val searchResult = MutableLiveData<List<Track>>(listOf())
+    val topTrack = MutableLiveData<SingleEvent<Track>>()
 
     fun checkUserTokenAvailable() {
         launchLite {
@@ -32,18 +33,23 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun checkIfCoroutinesWorking() {
+    fun onSearchQueryChanged(query: String) {
         launchLite {
-            delayTextUpdate()
+            val callResult = searchTrackOnce(query)
+            searchResult.postValue(callResult)
+            if (callResult.isNotEmpty()) {
+                topTrack.postValue(SingleEvent(callResult.first()))
+            }
         }
     }
 
-    private suspend fun delayTextUpdate() {
-        val song = spotifyRepository.searchSong("bad guy")
-        if (song == null) {
+    private suspend fun searchTrackOnce(query: String): List<Track> {
+        val searchResult = spotifyRepository.searchSong(query)
+        return if (searchResult == null) {
             textWithStatus.postValue("Search for son returns null")
+            emptyList()
         } else {
-            println(song)
+            searchResult.tracks.items
         }
     }
 }
