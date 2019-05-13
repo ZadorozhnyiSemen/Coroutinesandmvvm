@@ -1,4 +1,4 @@
-# Coroutines and MVVM [![Build Status](https://app.bitrise.io/app/4a5ec0c2a2720015/status.svg?token=JBsONqJd68ZC105QO1TmUg)](https://app.bitrise.io/app/4a5ec0c2a2720015)
+# Coroutines and MVVM 
 
 # Master is for releases. For current version check "dev" branch
 
