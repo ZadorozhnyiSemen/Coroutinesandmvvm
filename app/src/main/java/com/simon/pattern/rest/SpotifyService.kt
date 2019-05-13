@@ -12,5 +12,4 @@ interface SpotifyService {
         @Header("Authorization") token: String,
         @Query("q") searchQuery: String
     ): SearchResult
-
 }

@@ -74,7 +74,7 @@ class MainActivity : BaseActivity() {
             .showAuthView(true)
             .setRedirectUri("http://replay-app-login/callback")
             .build()
-
+        // TODO: Move from UI
         SpotifyAppRemote.connect(this, connectionParams, object : Connector.ConnectionListener {
             override fun onFailure(p0: Throwable?) {
                 Timber.e(p0)
