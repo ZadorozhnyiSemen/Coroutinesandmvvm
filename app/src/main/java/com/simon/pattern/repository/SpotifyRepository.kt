@@ -16,12 +16,10 @@ class SpotifyRepository @Inject constructor(
         }
     val authData = AuthData(
         decodeKey(loadClientId()),
-        decodeKey(loadClientId2()),
         decodeKey(loadRedirectUrl())
     )
 
     private external fun loadClientId(): String
-    private external fun loadClientId2(): String
     private external fun loadRedirectUrl(): String
 
     private fun decodeKey(key: String) = String(Base64.decode(key, Base64.DEFAULT))
@@ -37,14 +35,12 @@ class SpotifyRepository @Inject constructor(
     companion object {
         init {
             System.loadLibrary("key-store")
-            System.loadLibrary("lib")
         }
     }
 }
 
 class AuthData(
     val clientId: String,
-    val clientSecret: String,
     val clientUrl: String,
     val clientUrlCallback: String = "$clientUrl/callback",
     val scopes: Array<String> = arrayOf("user-read-email"),
