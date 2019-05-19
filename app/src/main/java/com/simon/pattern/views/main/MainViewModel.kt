@@ -1,6 +1,8 @@
 package com.simon.pattern.views.main
 
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.OnLifecycleEvent
 import com.simon.pattern.base.CoroutineViewModel
 import com.simon.pattern.base.SingleEvent
 import com.simon.pattern.domain.Track
@@ -23,6 +25,26 @@ class MainViewModel @Inject constructor(
             if (spotifyRepository.authToken.isEmpty()) {
                 userLoginRequired.postValue(SingleEvent(spotifyRepository.authData))
             }
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    fun onActivityCreated() {
+        launchIO {
+            spotifyRepository.connect()
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onActivityDestroy() {
+        launchIO {
+            spotifyRepository.disconnect()
+        }
+    }
+
+    fun trackItemClicked(trackId: String) {
+        launchMain {
+            spotifyRepository.play(trackId)
         }
     }
 

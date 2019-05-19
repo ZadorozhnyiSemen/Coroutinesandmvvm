@@ -7,14 +7,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.simon.pattern.R
 import com.simon.pattern.base.BaseActivity
-import com.simon.pattern.domain.Track
 import com.simon.pattern.repository.AuthData
 import com.simon.pattern.utils.getDistinctWatcher
 import com.simon.pattern.utils.viewModelProvider
-import com.spotify.android.appremote.api.ConnectionParams
-import com.spotify.android.appremote.api.Connector
-import com.spotify.android.appremote.api.SpotifyAppRemote
-import com.spotify.protocol.types.Repeat
 import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
@@ -62,30 +57,10 @@ class MainActivity : BaseActivity() {
 
         viewModel.topTrack.observe(this, Observer {
             it.getValueForEvent()?.let { track ->
-                //playTrack(track)
+
             }
         })
         viewModel.checkUserTokenAvailable()
-    }
-
-    private fun playTrack(track: Track) {
-
-        val connectionParams = ConnectionParams.Builder("4b4c241b697149978b2824480b6aec7c")
-            .showAuthView(true)
-            .setRedirectUri("http://replay-app-login/callback")
-            .build()
-        // TODO: Move from UI
-        SpotifyAppRemote.connect(this, connectionParams, object : Connector.ConnectionListener {
-            override fun onFailure(p0: Throwable?) {
-                Timber.e(p0)
-            }
-
-            override fun onConnected(p0: SpotifyAppRemote?) {
-                p0?.playerApi?.play(track.uri)
-                p0?.playerApi?.setRepeat(Repeat.ONE)
-            }
-
-        })
     }
 
     private fun requestAccessToken(authData: AuthData) {
