@@ -19,3 +19,4 @@ Roadmap:
 5. UI and player screen
 6. As soon as released - add assistant action to play music.
 7. Add Spotify based suggestions on the main screen
+
