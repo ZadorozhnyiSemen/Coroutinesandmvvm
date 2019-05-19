@@ -10,6 +10,7 @@ import com.simon.pattern.domain.Track
 import kotlinx.android.synthetic.main.track_item.view.*
 
 class TracksAdapter : RecyclerView.Adapter<TracksAdapter.TrackHolder>() {
+    var trackClickListener: TrackClickListener? = null
     var tracks: List<Track> = listOf()
         set(value) {
             field = value
@@ -31,6 +32,9 @@ class TracksAdapter : RecyclerView.Adapter<TracksAdapter.TrackHolder>() {
             trackName.text = track.name
             albumName.text = track.album.name
             trackUrl.text = track.uri
+            itemView.setOnClickListener {
+                trackClickListener?.onTrackClicked(track)
+            }
         }
     }
 
@@ -40,4 +44,8 @@ class TracksAdapter : RecyclerView.Adapter<TracksAdapter.TrackHolder>() {
         val albumName: TextView = itemView.track_album,
         val trackUrl: TextView = itemView.track_url
     ) : RecyclerView.ViewHolder(itemView)
+
+    interface TrackClickListener {
+        fun onTrackClicked(track: Track)
+    }
 }

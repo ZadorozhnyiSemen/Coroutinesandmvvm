@@ -35,7 +35,7 @@ class SpotifyRepository @Inject constructor(
     }
 
     override suspend fun connect() {
-        spotifyPlayerManager.connectToSpotify(loadClientId(), loadRedirectUrl())
+        spotifyPlayerManager.connectToSpotify(authData.clientId, authData.clientUrl)
     }
 
     override suspend fun disconnect() {
@@ -49,7 +49,6 @@ class SpotifyRepository @Inject constructor(
     companion object {
         init {
             System.loadLibrary("key-store")
-            System.loadLibrary("lib")
         }
     }
 }

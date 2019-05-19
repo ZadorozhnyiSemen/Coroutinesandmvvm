@@ -8,6 +8,7 @@ import com.simon.pattern.base.SingleEvent
 import com.simon.pattern.domain.Track
 import com.simon.pattern.repository.AuthData
 import com.simon.pattern.repository.SpotifyRepository
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
@@ -29,20 +30,22 @@ class MainViewModel @Inject constructor(
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun onActivityCreated() {
-        launchIO {
+    fun onCreated() {
+        Timber.d("--------------ON CREATE TRIGGERED-----------")
+        launchMain {
             spotifyRepository.connect()
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onActivityDestroy() {
+    fun onDestroy() {
         launchIO {
             spotifyRepository.disconnect()
         }
     }
 
     fun trackItemClicked(trackId: String) {
+        Timber.d("Clicked item $trackId")
         launchMain {
             spotifyRepository.play(trackId)
         }

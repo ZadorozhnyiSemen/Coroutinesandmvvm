@@ -14,9 +14,10 @@ class SpotifyPlayerManager @Inject constructor(
         set(value) {
             field = value
             field?.playerApi?.toggleRepeat()
+            field?.let { Timber.d("Spotify api available: ${it.isConnected}") }
         }
 
-    suspend fun connectToSpotify(clientId: String, redirectUrl: String) {
+    fun connectToSpotify(clientId: String, redirectUrl: String) {
         val connectionParams = ConnectionParams.Builder(clientId)
             .setRedirectUri(redirectUrl)
             .showAuthView(true)
@@ -28,27 +29,35 @@ class SpotifyPlayerManager @Inject constructor(
             }
 
             override fun onConnected(p0: SpotifyAppRemote?) {
-                p0?.let { playerController = it }
+                Timber.d("Connected to spotify remote")
+                p0?.let {
+                    Timber.d("---Controller captured ---")
+                    playerController = it
+                }
             }
         })
     }
 
-    suspend fun disconnectFromSpotify() {
+    fun disconnectFromSpotify() {
         SpotifyAppRemote.disconnect(playerController)
     }
 
-    suspend fun checkSpotifyDownloaded(): Boolean =
+    fun checkSpotifyDownloaded(): Boolean =
         SpotifyAppRemote.isSpotifyInstalled(appContext)
 
-    suspend fun playTrack(trackId: String): Boolean = if (!checkControllerAvailable()) {
+    fun playTrack(trackId: String): Boolean = if (checkControllerAvailable()) {
+        Timber.d("Controller available, playing track $trackId")
         playerController?.playerApi?.play(trackId)
         true
     } else {
+        Timber.i("Controller not available")
         false
     }
 
     private fun checkControllerAvailable(): Boolean {
-        playerController?.let { return it.isConnected }
+        playerController?.let {
+            return it.isConnected
+        }
         return false
     }
 }

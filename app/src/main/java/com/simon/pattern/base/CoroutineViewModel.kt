@@ -40,7 +40,7 @@ open class CoroutineViewModel : ViewModel() {
 
 class ViewModelCoroutineScope(
     job: Job = SupervisorJob(),
-    dispatcher: CoroutineDispatcher = Dispatchers.IO // Default IO assuming we almost always call network for data
+    dispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : CoroutineScope {
     override val coroutineContext: CoroutineContext = job + dispatcher
 }

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.simon.pattern.R
 import com.simon.pattern.base.BaseActivity
+import com.simon.pattern.domain.Track
 import com.simon.pattern.repository.AuthData
 import com.simon.pattern.utils.getDistinctWatcher
 import com.simon.pattern.utils.viewModelProvider
@@ -16,18 +17,20 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), TracksAdapter.TrackClickListener {
     private lateinit var viewModel: MainViewModel
     override val layoutId: Int? = R.layout.activity_main
 
-    private val trackAdapter = TracksAdapter()
+    private val trackAdapter: TracksAdapter = TracksAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         track_search.apply {
             layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.VERTICAL, false)
-            adapter = trackAdapter
+            adapter = trackAdapter.apply {
+                trackClickListener = this@MainActivity
+            }
         }
 
         search_input.addTextChangedListener(getDistinctWatcher {
@@ -48,7 +51,7 @@ class MainActivity : BaseActivity() {
         viewModel.spotifyServiceReady.observe(this, Observer {
             Timber.d("New token received. Service ready")
             search_input.isEnabled = true
-            //viewModel.checkIfCoroutinesWorking()
+            viewModel.onCreated()
         })
         viewModel.searchResult.observe(this, Observer {
             Timber.d("New search result accuired: \n\n\n $it")
@@ -61,6 +64,11 @@ class MainActivity : BaseActivity() {
             }
         })
         viewModel.checkUserTokenAvailable()
+    }
+
+    override fun onDestroy() {
+        viewModel.onDestroy()
+        super.onDestroy()
     }
 
     private fun requestAccessToken(authData: AuthData) {
@@ -78,6 +86,10 @@ class MainActivity : BaseActivity() {
             .setScopes(authData.scopes)
             .setCampaign(authData.campaign)
             .build()
+    }
+
+    override fun onTrackClicked(track: Track) {
+        viewModel.trackItemClicked(track.uri)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
